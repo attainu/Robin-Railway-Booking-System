@@ -5,6 +5,7 @@ import train from "../controller/adminControl"
 
 
 
+
 router.post('/register',(req,res)=>{
     return train.newAdmin(req,res)
 })
