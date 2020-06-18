@@ -29,8 +29,8 @@ const trainSchema = new schema({
         type:String,
         required:true
     },
-    availableDays:{
-        type:[String]
+    vacantSeats:{
+        type:Number
 
     },
     trainNumber:{

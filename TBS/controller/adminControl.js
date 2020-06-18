@@ -3,6 +3,8 @@ import Admin from "../models/Admin"
 import passport from "passport"
 import jwt from "jsonwebtoken"
 import config from "../config/database"
+import noOfSeats from "../helpers/deleteSeat"
+
 
 
 //adding a new admin
@@ -93,7 +95,7 @@ exports.addTrain = function(req,res){
         travelDistance:req.body.travelDistance,
         arrival:req.body.arrival,
         departure:req.body.departure,
-        availableDays:req.body.availableDays,
+        vacantSeats:noOfSeats,
         trainNumber:req.body.trainNumber,
         class:req.body.class,
         price:(req.body.price)*(req.body.travelDistance)

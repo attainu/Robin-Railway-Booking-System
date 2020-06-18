@@ -32,4 +32,16 @@ router.get('/pnr',passport.authenticate('jwt',{
 }),(req,res)=>{
     return userControl.byPnr(req,res)
 })
+
+router.put('/update',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return userControl.updateBooking(req,res)
+})
+
+router.delete('/cancel',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return userControl.cancelTicket(req,res)
+})
 module.exports = router;

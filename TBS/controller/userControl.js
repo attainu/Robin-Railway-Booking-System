@@ -1,5 +1,4 @@
 import User from "../models/User"
-import passport from "passport"
 import jwt from "jsonwebtoken"
 import config from "../config/database"
 import ticket from "../models/booking"
@@ -7,6 +6,7 @@ import trainData from "../models/trainModel"
 import nodemailer from "nodemailer"
 import seat from "../helpers/seat"
 import pnr from "../helpers/pnr"
+
 
 
 //new user registeration
@@ -117,7 +117,7 @@ exports.bookTicket = function(req,res){
                         service:'gmail',
                         auth:{
                             user:'kalyan15meka@gmail.com',
-                            pass:'********'
+                            pass:'********'   ///add your email and password here
                         }
                     });
                     var mailOptions = {
@@ -134,6 +134,8 @@ exports.bookTicket = function(req,res){
                             console.log("email sent"+info.response)
                         }
                     })
+
+                    
 
 
                     res.json({
@@ -166,5 +168,24 @@ exports.byPnr = function(req,res){
     })
 }
 
+//user can update his booking
+
+exports.updateBooking = function(req,res){
+    ticket.updateOne({pnrNumber:req.body.pnrNumber},{$set:{dateofjourney:req.body.dateofjourney}}).then(()=>{
+        res.json({
+            message:"ticket details updated"
+        })
+    })
+}
+
+//cancel existing ticket
+
+exports.cancelTicket = function(req,res){
+    ticket.deleteOne({pnrNumber:req.body.pnrNumber}).then(()=>{
+        res.json({
+            message:"Your ticket is canceled of pnr Number: "+req.body.pnrNumber
+        })
+    })
+}
 
 
