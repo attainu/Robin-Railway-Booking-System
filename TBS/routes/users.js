@@ -44,4 +44,16 @@ router.delete('/cancel',passport.authenticate('jwt',{
 }),(req,res)=>{
     return userControl.cancelTicket(req,res)
 })
+
+router.get('/bynumber',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return userControl.searchByNumber(req,res)
+})
+
+router.get('/alltrains',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return userControl.data(req,res)
+})
 module.exports = router;

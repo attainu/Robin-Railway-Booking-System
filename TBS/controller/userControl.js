@@ -103,7 +103,8 @@ exports.bookTicket = function(req,res){
     query.exec(function(err,found){
         if(err){
             res.json({
-                message:"invalid train number"
+                message:"invalid train number",
+                info:err
             })
         }
 
@@ -189,3 +190,45 @@ exports.cancelTicket = function(req,res){
 }
 
 
+//USER CAN GET THE TRAIN DETAILS BY TRAIN NUMBER
+
+exports.searchByNumber = function(req,res){
+    let query= trainData.findOne({trainNumber:req.body.trainNumber})
+    query.exec(function(err,data){
+        if(err){
+            res.json({
+                message:"Failed to get data Please check The Search Parameters",
+                error:err
+            })
+        }
+        else{
+            res.json({
+                message:'Results For Your Search',
+                info:data
+            })
+        }
+    })
+
+}
+
+//get all trains details in alphabetical order
+
+exports.data = function(req,res){
+    let query = trainData.find()
+    query.sort({trainName:1})
+    .limit(5)
+    .exec(function(err,result){
+        if(err){
+            res.json({
+                message:"Failed To Get Data",
+                info:err
+            })
+        }
+        else{
+            res.json({
+                message:"Good Morning These Trains Are Scheduled As Of Now",
+                info:result
+            })
+        }
+    })
+}

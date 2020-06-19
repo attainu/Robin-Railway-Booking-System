@@ -83,7 +83,10 @@ exports.login = function(req,res){
 
 //admin profile
 exports.adminDashboard = function(req,res){
-    return res.send(req.user)
+    return res.json({
+        message:'ADMIN PROFILE',
+        info:req.user
+    })
 }
 
 //add a new train
@@ -98,16 +101,22 @@ exports.addTrain = function(req,res){
         vacantSeats:noOfSeats,
         trainNumber:req.body.trainNumber,
         class:req.body.class,
-        price:(req.body.price)*(req.body.travelDistance)
+        pricePerKm:(req.body.pricePerKm)*(req.body.travelDistance)
 
     })
 
     entry.save(function(err,saved){
         if(err){
-            res.send(`error occured here while saving data : ${err}`)
+            res.json({
+                message:"Failed To Add Train",
+                info:err
+            })
         }
         else{
-            res.send(`NEW TRAIN DETAILS ADDED SUCCESFULLY`)
+            res.json({
+                message:'New Train Schedule Added',
+                info:saved
+            })
         }
     })
 }
@@ -120,33 +129,35 @@ exports.data = function(req,res){
     .limit(5)
     .exec(function(err,result){
         if(err){
-            res.send(err)
+            res.json({
+                message:"Failed To Get Data",
+                info:err
+            })
         }
         else{
-            res.send("TRAINS SCHEDULED :"+result)
+            res.json({
+                message:"Below Are The Scheduled Trains",
+                info:result
+            })
         }
     })
 }
 
 //update details of specific train
-
 exports.update = function(req,res){
-    trainData.updateOne({trainName:req.body.trainName},{$set:{origin:req.body.origin,
-        destination:req.body.destination,
-        travelDistance:req.body.travelDistance,
-        arrival:req.body.arrival,
-        availableDays:req.body.availableDays,
-        departure:req.body.departure}}).then(()=>{
-            res.send(`${req.body.trainName} details updated`)
-        }).catch(()=>{
-            res.send("failed to update train details")
+    trainData.updateOne({trainNumber:req.body.trainNumber}, {$set:{arrival:req.body.arrival,departure:req.body.departure}}).then(()=>{
+        res.json({
+            message:'Train Details Updated'
         })
+    })
 }
 
-//delete train 
-exports.delete = function(req,res){
-    trainData.deleteOne({trainName:req.body.trainName}).then(()=>{
-        res.send(`${req.body.trainName} is cancelled `)
-    })
+//delete train
 
+exports.delete = function(req,res){
+    trainData.deleteOne({trainNumber:req.body.trainNumber}).then(()=>{
+        res.json({
+            message:"deleted succesfully"
+        })
+    })
 }
