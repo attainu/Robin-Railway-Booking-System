@@ -45,4 +45,10 @@ router.delete('/cancel',passport.authenticate('jwt',{
 }),(req,res)=>{
     return train.delete(req,res)
 })
+
+router.delete('/ticketcancel',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return train.cancelticket(req,res)
+})
 module.exports = router;

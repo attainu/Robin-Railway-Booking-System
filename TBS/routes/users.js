@@ -2,6 +2,7 @@ import express from "express"
 const router = express.Router();
 import passport from "passport"
 import userControl from "../controller/userControl"
+import uploads from "../helpers/imageupload"
 
 
 
@@ -21,7 +22,7 @@ router.get('/profile',passport.authenticate('jwt',{
     return userControl.userDashboard(req,res)
 })
 
-router.post('/book',passport.authenticate('jwt',{
+router.post('/book',uploads.uploads.single("file"),passport.authenticate('jwt',{
     session:false
 }),(req,res)=>{
     return userControl.bookTicket(req,res)

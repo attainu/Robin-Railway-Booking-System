@@ -6,8 +6,15 @@ import trainData from "../models/trainModel"
 import nodemailer from "nodemailer"
 import seat from "../helpers/seat"
 import pnr from "../helpers/pnr"
-
-
+import imageupload from "../helpers/imageupload"
+import path from "path"
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+    cloud_name: "dp8vvueya",
+    api_key: "925896488712235",
+    api_secret: "SaPAKX3hQUjFVrq79o6t-VC2tuA"
+});
+import fs from "fs"
 
 //new user registeration
 
@@ -88,7 +95,8 @@ exports.userDashboard = function(req,res){
 }
 
 //new booking
-exports.bookTicket = function(req,res){
+exports.bookTicket = async function(req,res){
+    const url= await cloudinary.uploader.upload(req.file.path)
     let book = new ticket({
         passengername:req.user.name,
         email:req.user.email,
@@ -96,8 +104,10 @@ exports.bookTicket = function(req,res){
         pnrNumber:pnr,
         dateofjourney:req.body.dateofjourney,
         seatNumber:seat,
-        status:req.body.status
+        status:req.body.status,
+        aadharimage:url.url
     })
+    fs.unlinkSync(req.file.path)
 
     let query =trainData.findOne({trainNumber:req.body.trainNumber})
     query.exec(function(err,found){

@@ -46,6 +46,9 @@ const trainSchema = new schema({
     pricePerKm:{
         type:Number,
         required:true
+    },
+    totalFare:{
+        type:Number
     }
 })
 

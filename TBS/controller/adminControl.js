@@ -4,6 +4,7 @@ import passport from "passport"
 import jwt from "jsonwebtoken"
 import config from "../config/database"
 import noOfSeats from "../helpers/deleteSeat"
+import ticket from "../models/booking"
 
 
 
@@ -101,7 +102,8 @@ exports.addTrain = function(req,res){
         vacantSeats:noOfSeats,
         trainNumber:req.body.trainNumber,
         class:req.body.class,
-        pricePerKm:(req.body.pricePerKm)*(req.body.travelDistance)
+        pricePerKm:req.body.pricePerKm,
+        totalFare:(req.body.travelDistance)*(req.body.pricePerKm)
 
     })
 
@@ -158,6 +160,16 @@ exports.delete = function(req,res){
     trainData.deleteOne({trainNumber:req.body.trainNumber}).then(()=>{
         res.json({
             message:"deleted succesfully"
+        })
+    })
+}
+
+//admin cancels tickets of cancelled trains
+
+exports.cancelticket = function(req,res){
+    ticket.deleteMany({trainNumber:req.body.trainNumber}).then(()=>{
+        res.json({
+            message:'tickets cancelled'
         })
     })
 }

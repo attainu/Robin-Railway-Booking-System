@@ -9,6 +9,9 @@ import morgan from "morgan"
 import users from "./routes/users"
 import admin from "./routes/admin"
 import checkUserType from "./helpers/userType"
+import path from "path"
+
+
 
 
 
@@ -33,15 +36,31 @@ app.use(cors());
 app.use(morgan('tiny'))
 
 // BodyParser Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}))
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))
 // Passport Middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+
 //middleware for checking user
 app.use(checkUserType);
 
+//setting views directory for views.
+app.set("views", path.join(__dirname, "views")); 
+//setting view engine as handlebars
+app.set("view engine", "hbs"); 
+
+
+//image upload
+
+app.use(express.static(path.join(__dirname, "uploads")));
+
+//index route for views
+app.get('/',(req,res)=>{
+    res.render('index',{title:'RAILWAY BOOKING SYSTEM'})
+})
 //user route
 app.use('/api/users', users);
 

@@ -23,7 +23,7 @@ const bookingSchema = new schema({
         unique:true
     },
     dateofjourney:{
-        type:Date,
+        type:String,
         required:true
     },
     seatNumber:{
@@ -34,6 +34,10 @@ const bookingSchema = new schema({
     status:{
         type:String,
         default:'YOUR TICKET HAS BEEN CONFIRMED YOU WILL RECIEVE CONFIRMATION MESSAGE TO YOUR MAIL'
+    },
+    aadharimage:{
+        type:String,
+        required:true
     }
 })
 
