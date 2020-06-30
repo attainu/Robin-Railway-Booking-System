@@ -1,6 +1,6 @@
 ## TRAIN BOOKING SYSTEM(TBS)
 
-**About Project**:Its a simple train ticket booking system where admin can schedule trains and user can book trains and update the booking details.User will get confirmation mail after successful booking.
+**About Project**:Its a simple train ticket booking system were admin can schedule trains and user can book trains and update the booking details.User will get confirmation mail after successful booking.
 
 
 
