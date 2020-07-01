@@ -31,3 +31,5 @@ User will get confirmation mail after successful booking.
  - MORGAN
  - MONGOOSE UNIQUE VALIDATOR
 
+**Heroku Link:** [https://attainu-tbs.herokuapp.com/](https://attainu-tbs.herokuapp.com/)
+Run the application on postman by importing the API documentation
