@@ -6,19 +6,19 @@ import trainData from "../models/trainModel"
 import nodemailer from "nodemailer"
 import seat from "../helpers/seat"
 import pnr from "../helpers/pnr"
-import imageupload from "../helpers/imageupload"
-import path from "path"
+import fs from "fs"
+
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
     cloud_name: "dp8vvueya",
     api_key: "925896488712235",
     api_secret: "SaPAKX3hQUjFVrq79o6t-VC2tuA"
 });
-import fs from "fs"
+
 
 //new user registeration
 
-exports.addUser = function(req,res){
+exports.addUser = (req,res)=>{
     let newUser = new User({
         name: req.body.name,
         username: req.body.username,
@@ -26,27 +26,37 @@ exports.addUser = function(req,res){
         contact: req.body.contact,
         password: req.body.password
     });
-    User.addUser(newUser, (err, user) => {
-        if (err) {
-            let message = "";
-            if (err.errors.username) message = "Username is already taken. ";
-            if (err.errors.email) message += "Email already exists.";
-            return res.json({
-                success: false,
-                message
-            })
-        } else {
-            return res.json({
-                success: true,
-                message: "User registration is successful."
-            })
-        }
-    })
+    if(req.body.username==null){
+        res.json({message:'username is required'})
+    }
+    if(req.body.password==null){
+        res.json({message:'password is required'})
+    }
+    else{
+        User.addUser(newUser, (err, user) => {
+            if (err) {
+                let message = "";
+                if (err.errors.username) message = "Username is already taken. ";
+                if (err.errors.email) message += "Email already exists.";
+                return res.json({
+                    success: false,
+                    message
+                })
+            } else {
+                return res.json({
+                    success: true,
+                    message: "User registration is successful."
+                })
+            }
+        })
+
+    }
+    
 }
 
 //user login
 
-exports.userLogin = function(req,res){
+exports.userLogin = (req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
 
@@ -80,7 +90,7 @@ exports.userLogin = function(req,res){
                 })
             } else {
                 return res.json({
-                    success: true,
+                    success: false,
                     message: "Wrong Password."
                 })
             }
@@ -88,14 +98,17 @@ exports.userLogin = function(req,res){
     })
 }
 
-//userDashboard
+//userprofile
 
-exports.userDashboard = function(req,res){
-    return res.send(req.user)
+exports.userDashboard = (req,res)=>{
+    return res.json({
+        message:`welcome ${req.user.name}`,
+        info:req.user
+    })
 }
 
 //new booking
-exports.bookTicket = async function(req,res){
+exports.bookTicket = async (req,res)=>{
     const url= await cloudinary.uploader.upload(req.file.path)
     let book = new ticket({
         passengername:req.user.name,
@@ -108,8 +121,18 @@ exports.bookTicket = async function(req,res){
         aadharimage:url.url
     })
     fs.unlinkSync(req.file.path)
-
-    let query =trainData.findOne({trainNumber:req.body.trainNumber})
+    if(req.body.trainNumber==null){
+        res.json({
+            message:'fields required'
+        })
+    }
+    if(req.body.dateofjourney==null){
+        res.json({
+            message:'fields required'
+        })
+    }
+    else{
+        let query =trainData.findOne({trainNumber:req.body.trainNumber})
     query.exec(function(err,found){
         if(err){
             res.json({
@@ -121,19 +144,23 @@ exports.bookTicket = async function(req,res){
         if(found){
             book.save(function(err,saved){
                 if(err){
-                    res.send("unable to book"+err)
+                    res.json({
+                        message:'unable to book',
+                        info:err
+                    })
                 }
                 else{
+
                     var transporter = nodemailer.createTransport({
                         service:'gmail',
                         auth:{
-                            user:'kalyan15meka@gmail.com',
-                            pass:'********'   ///add your email and password here
+                            user:'attainutbs@gmail.com',
+                            pass:'tbsattainu'   
                         }
                     });
                     var mailOptions = {
-                        from:'kalyan15meka@gmail.com',
-                        to:'kalusai392@gmail.com',
+                        from:'attainutbs@gmail.com',
+                        to:req.user.email,
                         subject:'BOOKING CONFIRMATION',
                         text:JSON.stringify(saved)
                     };
@@ -146,9 +173,6 @@ exports.bookTicket = async function(req,res){
                         }
                     })
 
-                    
-
-
                     res.json({
                         message:"succesful",
                         ticket:saved
@@ -158,11 +182,16 @@ exports.bookTicket = async function(req,res){
         }
     })
 
+
+    }
+
+    
  
 }
 
+
 //user can search his ticket by using pnr number
-exports.byPnr = function(req,res){
+exports.byPnr = (req,res)=>{
     let query = ticket.findOne({pnrNumber:req.body.pnrNumber})
     query.exec(function(err,tickt){
         if(err){
@@ -181,8 +210,10 @@ exports.byPnr = function(req,res){
 
 //user can update his booking
 
-exports.updateBooking = function(req,res){
+exports.updateBooking = (req,res)=>{
     ticket.updateOne({pnrNumber:req.body.pnrNumber},{$set:{dateofjourney:req.body.dateofjourney}}).then(()=>{
+
+        
         res.json({
             message:"ticket details updated"
         })
@@ -191,7 +222,7 @@ exports.updateBooking = function(req,res){
 
 //cancel existing ticket
 
-exports.cancelTicket = function(req,res){
+exports.cancelTicket = (req,res)=>{
     ticket.deleteOne({pnrNumber:req.body.pnrNumber}).then(()=>{
         res.json({
             message:"Your ticket is canceled of pnr Number: "+req.body.pnrNumber
@@ -199,27 +230,6 @@ exports.cancelTicket = function(req,res){
     })
 }
 
-
-//USER CAN GET THE TRAIN DETAILS BY TRAIN NUMBER
-
-exports.searchByNumber = function(req,res){
-    let query= trainData.findOne({trainNumber:req.body.trainNumber})
-    query.exec(function(err,data){
-        if(err){
-            res.json({
-                message:"Failed to get data Please check The Search Parameters",
-                error:err
-            })
-        }
-        else{
-            res.json({
-                message:'Results For Your Search',
-                info:data
-            })
-        }
-    })
-
-}
 
 //get all trains details in alphabetical order
 
@@ -236,9 +246,93 @@ exports.data = function(req,res){
         }
         else{
             res.json({
-                message:"Good Morning These Trains Are Scheduled As Of Now",
+                message:"These Trains Are Scheduled As Of Now",
                 info:result
             })
         }
     })
+}
+
+
+// to know the trains between two stations
+exports.stations = (req,res)=>{
+
+    trainData.find({origin:req.body.origin,destination:req.body.destination},(err,docs)=>{
+        if(err){
+            res.json({
+                message:'failed to get train data',
+                info:err
+            })
+        }
+
+        else{
+            res.json({
+                message: `Trains Between ${req.body.origin} and ${req.body.destination}`,
+                info:docs
+            })
+        }
+    })
+}
+
+
+//user can see all his bookings
+
+exports.bookings =(req,res)=>{
+    let query= ticket.find({email:req.user.email})
+    query.exec(function(err,result){
+        if(err){
+            res.json({
+                message:'failed to get data',
+                info:err
+            })
+        }
+        else{
+            res.json({
+                message:'Your Bookings',
+                info:result
+            })
+        }
+
+    })
+}
+
+exports.getByEmail =(req,res)=>{
+
+    let query = ticket.findOne({pnrNumber:req.body.pnrNumber})
+    query.exec(function(err,tickt){
+        if(err){
+            res.json({
+                message:'PNR NOT FOUND'
+            })
+        }
+        else{
+
+            var transporter = nodemailer.createTransport({
+                service:'gmail',
+                auth:{
+                    user:'attainutbs@gmail.com',
+                    pass:'tbsattainu'   
+                }
+            });
+            var mailOptions = {
+                from:'attainutbs@gmail.com',
+                to:req.user.email,
+                subject:'TICKET DETAILS',
+                text:JSON.stringify(tickt)
+            };
+            transporter.sendMail(mailOptions,function(error,info){
+                if(error){
+                    console.log(error)
+                }
+                else{
+                    console.log("email sent"+info.response)
+                }
+            })
+
+            res.json({
+                message:'YOUR TICKET DETAILS SENT TO MAIL'
+            })
+        }
+    })
+
 }

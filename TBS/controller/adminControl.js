@@ -1,15 +1,16 @@
 import trainData from "../models/trainModel"
 import Admin from "../models/Admin"
-import passport from "passport"
 import jwt from "jsonwebtoken"
 import config from "../config/database"
-import noOfSeats from "../helpers/deleteSeat"
+import noOfSeats from "../helpers/seatCount"
 import ticket from "../models/booking"
 
 
 
+
+
 //adding a new admin
-exports.newAdmin = function(req,res){
+exports.newAdmin = (req,res)=>{
     let newAdmin = new Admin({
         name: req.body.name,
         username: req.body.username,
@@ -18,28 +19,38 @@ exports.newAdmin = function(req,res){
         password: req.body.password,
         job_profile: req.body.job_profile
     });
-    Admin.addAdmin(newAdmin, (err, user) => {
-        if (err) {
-            let message = "";
-            if (err.errors.username) message = "Username is already taken. ";
-            if (err.errors.email) message += "Email already exists.";
-            return res.json({
-                success: false,
-                message
-            });
-        } else {
-            return res.json({
-                success: true,
-                message: "Admin registration is successful."
-            });
-        }
-    });
+    if(req.body.username==null){
+        res.json({message:'username is required'})
+    }
+    if(req.body.password==null){
+        res.json({message:'password is required'})
+    }
+    else{
+        Admin.addAdmin(newAdmin, (err, user) => {
+            if (err) {
+                let message = "";
+                if (err.errors.username) message = "Username is already taken. ";
+                if (err.errors.email) message += "Email already exists.";
+                return res.json({
+                    success: false,
+                    message
+                });
+            } else {
+                return res.json({
+                    success: true,
+                    message: "Admin registration is successful."
+                });
+            }
+        });
+
+    }
+    
     
 
 }
 
 //admin login
-exports.login = function(req,res){
+exports.login = (req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
 
@@ -74,7 +85,7 @@ exports.login = function(req,res){
                 });
             } else {
                 return res.json({
-                    success: true,
+                    success: false,
                     message: "Wrong Password."
                 });
             }
@@ -83,15 +94,15 @@ exports.login = function(req,res){
 }
 
 //admin profile
-exports.adminDashboard = function(req,res){
+exports.adminDashboard = (req,res)=>{
     return res.json({
-        message:'ADMIN PROFILE',
+        message:'Welcome '+req.user.name,
         info:req.user
     })
 }
 
 //add a new train
-exports.addTrain = function(req,res){
+exports.addTrain = (req,res)=>{
     let entry = new trainData({
         trainName:req.body.trainName,
         origin:req.body.origin,
@@ -125,7 +136,7 @@ exports.addTrain = function(req,res){
 
 //get all trains details in alphabetical order
 
-exports.data = function(req,res){
+exports.data = (req,res)=>{
     let query = trainData.find()
     query.sort({trainName:1})
     .limit(5)
@@ -146,27 +157,50 @@ exports.data = function(req,res){
 }
 
 //update details of specific train
-exports.update = function(req,res){
-    trainData.updateOne({trainNumber:req.body.trainNumber}, {$set:{arrival:req.body.arrival,departure:req.body.departure}}).then(()=>{
-        res.json({
-            message:'Train Details Updated'
-        })
+exports.update = (req,res)=>{
+    const { trainNumber, arrival,departure } = req.body
+
+    trainData.updateOne({trainNumber}, {$set:{arrival,departure}}).then(()=>{
+        if(req.body.trainNumber==null){
+            res.json({message:'trainNumber cannot be empty'})
+        }
+        if(req.body.arrival==null){
+            res.json({message:' arrival time required'})
+        }
+        if(req.body.departure==null){
+            res.json({message:'departure time required'})
+        }
+        else{
+            res.json({message:`Sucessfully updated train details of ${req.body.trainNumber}`})
+        }
     })
 }
 
 //delete train
 
-exports.delete = function(req,res){
-    trainData.deleteOne({trainNumber:req.body.trainNumber}).then(()=>{
+exports.delete = (req,res)=>{
+    if(req.body.trainNumber==null){
         res.json({
-            message:"deleted succesfully"
+            message:'field required'
         })
-    })
+    }
+    else{
+        trainData.deleteOne({trainNumber:req.body.trainNumber}).then(()=>{
+            res.json({
+                message:'train deleted sucesfully'
+            })
+        })
+    }
+   
+
+
+    
+
 }
 
 //admin cancels tickets of cancelled trains
 
-exports.cancelticket = function(req,res){
+exports.cancelticket = (req,res)=>{
     ticket.deleteMany({trainNumber:req.body.trainNumber}).then(()=>{
         res.json({
             message:'tickets cancelled'

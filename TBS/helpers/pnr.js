@@ -1,5 +1,3 @@
-import num from 'crypto-random-string'
+import uniqid from "uniqid"
 
-const pnr = num({length:10,type:'numeric'})
-
-module.exports= pnr
+module.exports = uniqid.process()

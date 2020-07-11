@@ -6,14 +6,14 @@ import uniqueValidator from "mongoose-unique-validator"
 // Admin Schema
 const AdminSchema = mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String
     },
+        
     email: {
         type: String,
         unique: true,
-        index: true,
-        required: true
+        index: true
+        
     },
     username: {
         type: String,
@@ -25,12 +25,12 @@ const AdminSchema = mongoose.Schema({
         required: true
     },
     contact: {
-        type: String,
-        required: true
+        type: String
+        
     },
     job_profile: {
-        type: String,
-        required: true
+        type: String
+        
     }
 });
 

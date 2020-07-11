@@ -7,14 +7,14 @@ import uniqueValidator from "mongoose-unique-validator"
 // User Schema
 const UserSchema = mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String
+        
     },
     email: {
         type: String,
         unique: true,
-        index: true,
-        required: true
+        index: true
+        
     },
     username: {
         type: String,
@@ -26,8 +26,8 @@ const UserSchema = mongoose.Schema({
         required: true
     },
     contact: {
-        type: String,
-        required: true
+        type: String
+        
     }
 });
 

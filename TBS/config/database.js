@@ -1,4 +1,4 @@
 module.exports = {
-    database: 'mongodb://localhost:27017/TBS',
-    secret: 'yoursecret'
+    mongo_URI: 'mongodb+srv://kalyan123:kalyan@tbscluster-flqjn.mongodb.net/tbs?retryWrites=true&w=majority',
+    secret: 'justsecret'
 }

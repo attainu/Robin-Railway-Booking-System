@@ -19,7 +19,7 @@ const bookingSchema = new schema({
         required:true
     },
     pnrNumber:{
-        type:Number,
+        type:String,
         unique:true
     },
     dateofjourney:{
@@ -31,14 +31,11 @@ const bookingSchema = new schema({
         unique:true,
         required:true
     },
-    status:{
-        type:String,
-        default:'YOUR TICKET HAS BEEN CONFIRMED YOU WILL RECIEVE CONFIRMATION MESSAGE TO YOUR MAIL'
-    },
     aadharimage:{
         type:String,
         required:true
     }
+    
 })
 
 bookingSchema.plugin(uniqueValidator)

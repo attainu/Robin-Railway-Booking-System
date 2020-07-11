@@ -22,7 +22,7 @@ router.get('/profile',passport.authenticate('jwt',{
     return userControl.userDashboard(req,res)
 })
 
-router.post('/book',uploads.uploads.single("file"),passport.authenticate('jwt',{
+router.post('/book',uploads.uploads.single("idProof"),passport.authenticate('jwt',{
     session:false
 }),(req,res)=>{
     return userControl.bookTicket(req,res)
@@ -46,15 +46,27 @@ router.delete('/cancel',passport.authenticate('jwt',{
     return userControl.cancelTicket(req,res)
 })
 
-router.get('/bynumber',passport.authenticate('jwt',{
-    session:false
-}),(req,res)=>{
-    return userControl.searchByNumber(req,res)
-})
 
 router.get('/alltrains',passport.authenticate('jwt',{
     session:false
 }),(req,res)=>{
     return userControl.data(req,res)
+})
+
+router.get('/station',(req,res)=>{
+    return userControl.stations(req,res)
+})
+
+router.get('/mybookings',passport.authenticate('jwt',{
+    session:false
+
+}),(req,res)=>{
+    return userControl.bookings(req,res)
+})
+
+router.get('/email',passport.authenticate('jwt',{
+    session:false
+}),(req,res)=>{
+    return userControl.getByEmail(req,res)
 })
 module.exports = router;

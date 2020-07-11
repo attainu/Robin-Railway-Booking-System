@@ -4,12 +4,12 @@ import passport from "passport"
 import train from "../controller/adminControl"
 
 
-
-
+//admin register
 router.post('/register',(req,res)=>{
     return train.newAdmin(req,res)
 })
 
+//admin login
 router.post('/login',(req,res)=>{
     return train.login(req,res)
 })

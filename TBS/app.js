@@ -1,6 +1,5 @@
 import express from "express"
 import mongoose from "mongoose"
-import bodyParser from "body-parser"
 import cors from "cors"
 import config from './config/database'
 import passport from "passport"
@@ -13,16 +12,14 @@ import path from "path"
 
 
 
-
-
-// Connect with the database
-mongoose.connect(config.database, {
+// Connect with the database 
+mongoose.connect(config.mongo_URI, {
         useNewUrlParser: true,
         useUnifiedTopology:true,
         useCreateIndex:true
     })
     .then(() => {
-        console.log(chalk.bold.dim('Databse connected successfully ' + config.database));
+        console.log(chalk.bold.dim('Databse connected successfully '));
     }).catch(err => {
         console.log(err);
     });
@@ -35,22 +32,22 @@ const app = express();
 app.use(cors());
 app.use(morgan('tiny'))
 
-// BodyParser Middleware
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
-// Passport Middleware
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-//middleware for checking user
 app.use(checkUserType);
 
 //setting views directory for views.
 app.set("views", path.join(__dirname, "views")); 
 //setting view engine as handlebars
 app.set("view engine", "hbs"); 
+
+
+
 
 
 //image upload
